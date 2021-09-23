@@ -1,4 +1,4 @@
-import { CajaInterface, cajaVacia } from "./caja-interface.interface";
+import { CajaForSincroInterface, CajaInterface, cajaVacia } from "./caja-interface.interface";
 import * as schCajas from "./caja.mongodb";
 import * as schTickets from "../tickets/tickets.mongodb";
 import { tocGame } from "src/toc";
@@ -40,6 +40,30 @@ export class CajaClase {
         });        
     }
 
+    nuevoItemSincroCajas(caja: CajaInterface) {
+        let cajaInsertar: CajaForSincroInterface;
+        cajaInsertar._id = Date.now();
+        cajaInsertar.inicioTime = caja.inicioTime;
+        cajaInsertar.finalTime = caja.finalTime;
+        cajaInsertar.idDependienta = caja.idDependienta;
+        cajaInsertar.totalApertura = caja.totalApertura;
+        cajaInsertar.totalCierre = caja.totalCierre;
+        cajaInsertar.descuadre = caja.descuadre;
+        cajaInsertar.recaudado = caja.recaudado;
+        cajaInsertar.nClientes = caja.nClientes;
+        cajaInsertar.primerTicket = caja.primerTicket;
+        cajaInsertar.infoExtra = caja.infoExtra;
+        cajaInsertar.ultimoTicket = caja.ultimoTicket;
+        cajaInsertar.calaixFetZ = caja.calaixFetZ;
+        cajaInsertar.detalleApertura = caja.detalleCierre;
+        cajaInsertar.enviado = caja.enviado;
+        cajaInsertar.enTransito = caja.enTransito;
+        cajaInsertar.totalDatafono3G = caja.totalDatafono3G;
+        cajaInsertar.totalClearOne = caja.totalClearOne;
+
+        caja
+    }
+
     async cerrarCaja(total: number, detalleCierre, guardarInfoMonedas, totalDatafono3G: number, totalClearOne: number) { //Promise<boolean> {
         let estaAbierta = await this.cajaAbierta();
 
@@ -67,6 +91,7 @@ export class CajaClase {
                 totalTkrs: totalTkrs
             }
     
+
             ipcRenderer.send('guardarCajaSincro', cajaActual);
             
             ipcRenderer.send('enviar-email', objEmail);
