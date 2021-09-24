@@ -1,6 +1,6 @@
 import { client } from "../conexion/mongodb";
 
-export async function getInfoArticulo(idArticulo: number) {
+export async function getInfoArticulo(idArticulo: number): Promise<any> {
     await client.connect();
     const database = client.db('tocgame');
     const articulos = database.collection('articulos');
@@ -9,7 +9,7 @@ export async function getInfoArticulo(idArticulo: number) {
     return resultado;
 }
 
-export async function getInfoArticuloTarifaEspecial(idArticulo: number) {
+export async function getInfoArticuloTarifaEspecial(idArticulo: number): Promise<any> {
     await client.connect();
     const database = client.db('tocgame');
     const articulos = database.collection('ArticulosTarifaEspecial');

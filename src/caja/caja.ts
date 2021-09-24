@@ -1,6 +1,8 @@
+// 100%
 import { CajaForSincroInterface, CajaInterface, cajaVacia } from "./caja-interface.interface";
 import * as schCajas from "./caja.mongodb";
 import * as schTickets from "../tickets/tickets.mongodb";
+import * as schMonedas from "../monedas/monedas.mongodb";
 import { tocGame } from "src/toc";
 import { TicketsInterface } from "src/tickets/tickets.interface";
 import { MovimientosInterface } from "src/movimientos/movimientos.interface";
@@ -37,7 +39,7 @@ export class CajaClase {
         }).catch((err) => {
             console.log(err);
             return false;
-        });        
+        }); 
     }
 
     nuevoItemSincroCajas(caja: CajaInterface) {
@@ -61,7 +63,7 @@ export class CajaClase {
         cajaInsertar.totalDatafono3G = caja.totalDatafono3G;
         cajaInsertar.totalClearOne = caja.totalClearOne;
 
-        caja
+        return schCajas.nuevoItemSincroCajas(cajaInsertar);
     }
 
     async cerrarCaja(total: number, detalleCierre, guardarInfoMonedas, totalDatafono3G: number, totalClearOne: number) { //Promise<boolean> {
@@ -91,19 +93,73 @@ export class CajaClase {
                 totalTkrs: totalTkrs
             }
     
+            const res = await this.nuevoItemSincroCajas(cajaActual);
+            if (res.acknowledged) {
+                // ipcRenderer.send('enviar-email', objEmail);
 
-            ipcRenderer.send('guardarCajaSincro', cajaActual);
-            
-            ipcRenderer.send('enviar-email', objEmail);
-            ipcRenderer.send('set-monedas', guardarInfoMonedas);
-            this.borrarCaja()
-            vueCaja.cerrarModal();
-            this.iniciar();
-            //return false;
-
+                const res2 = await schMonedas.setMonedas({
+                    _id: "INFO_MONEDAS",
+                    infoDinero: guardarInfoMonedas
+                });
+                if (res2.acknowledged) {
+                    if (await this.borrarCaja()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
+    }
+
+    borrarCaja() {
+        const unaCaja: CajaInterface  = {
+            _id: "CAJA",
+            inicioTime: null,
+            finalTime: null,
+            idDependienta: null,
+            totalApertura: null,
+            totalCierre: null,
+            calaixFetZ: null,
+            descuadre: null,
+            infoExtra: {
+                cambioInicial: null,
+                cambioFinal: null,
+                totalSalidas: null,
+                totalEntradas: null,
+                totalEnEfectivo: null,
+                totalTarjeta: null,
+                totalDeuda: null
+            },
+            primerTicket: null,
+            ultimoTicket: null,
+            recaudado: null,
+            nClientes: null,
+            detalleApertura: [],
+            detalleCierre: [],
+            enviado: false,
+            enTransito: false,
+            totalDatafono3G: null,
+            totalClearOne: null
+        };
+
+        return schCajas.setInfoCaja(unaCaja).then((result) => {
+            if (result.acknowledged) {
+                return true;
+            } else {
+                return false;
+            }
+        }).catch((err) => {
+            console.log(err);
+            return false;
+        }); 
+
     }
 
     async calcularDatosCaja(unaCaja: CajaInterface): Promise<CajaInterface> {

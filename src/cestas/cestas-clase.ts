@@ -1,9 +1,10 @@
-import * as schCestas from '../schemas/cestas';
+import * as schCestas from './cestas.mongodb';
 import { CestasInterface } from './cestas.interface';
 import { construirObjetoIvas, crearCestaVacia } from '../funciones/funciones';
 import { articulosInstance } from '../articulos/articulos';
 import { ofertas } from '../ofertas/ofertas-clase';
 import { caja } from '../caja/caja';
+import { tocGame } from 'src/toc';
 
 /* Siempre cargar la cesta desde MongoDB */
 export class CestaClase {
@@ -11,7 +12,7 @@ export class CestaClase {
   private udsAplicar: number;
   constructor() {
     /* CARGA DESDE MONGO UNA CESTA EN MEMORIA DE NODE */
-    schCestas.getUnaCesta().then((respuesta) => {
+    schCestas.getUnaCesta().then((respuesta: CestasInterface) => {
       if (respuesta != undefined && respuesta != null && respuesta.lista.length != 0 && respuesta._id != null) {
       for (let i = 0; i < respuesta.lista.length; i++) {
         respuesta.lista[i].subtotal = Number(respuesta.lista[i].subtotal.toFixed(2));
@@ -24,21 +25,21 @@ export class CestaClase {
     this.udsAplicar = 1;
   }
 
-  getCesta(idCesta: number) {
+  getCesta(idCesta: number): Promise<CestasInterface> {
     return schCestas.getCestaConcreta(idCesta);
   }
 
-  getCestaRandom() {
+  getCestaRandom(): Promise<CestasInterface> {
     return schCestas.getUnaCesta();
   }
 
-  getCurrentId() {
-    return this.cesta._id;
-  }
+  // getCurrentId() {
+  //   return this.cesta._id;
+  // }
 
   reiniciarCesta(idCestaBorrar) {
     return this.borrarCesta(idCestaBorrar).then(() => {
-      return schCestas.getAllCestas().then((res) => {
+      return this.getTodasCestas().then((res) => {
         if(res.length > 0) { // Hay alguna cesta
           return res[0]; //Devuelvo la primera que encuentro.
         } else { // No quedan cestas
@@ -71,26 +72,43 @@ export class CestaClase {
     return nuevaCesta;
   }
 
-  getTodasCestas(): Promise<any> {
+  getTodasCestas(): Promise<CestasInterface[]> {
     return schCestas.getAllCestas();
   }
 
-  borrarCesta(idCestaBorrar): Promise<any> {
-    return schCestas.borrarCesta(idCestaBorrar).then(() => {
-      return schCestas.getAllCestas().then((res) => {
-        if(res.length > 0) { // Hay alguna cesta
-          return res[0]; // Devuelvo la primera que encuentro.
-        } else { // No quedan cestas
-          const nuevaCesta = this.nuevaCestaVacia();
-          this.setCesta(nuevaCesta);
-          return nuevaCesta;
-        }
-      });
+  borrarCesta(idCestaBorrar): Promise<boolean> {
+    return schCestas.borrarCesta(idCestaBorrar).then((res) => {
+      if (res.acknowledged) {
+        return true;
+      } else {
+        return false;
+      }
+    }).catch((err) => {
+      console.log(err);
+      return false;
+    });
+  }
+
+  /* Guarda la cesta en Mongo */
+  setCesta(data: CestasInterface): Promise<boolean> {
+    for(let i = 0; i < data.lista.length; i++) {
+      data.lista[i].subtotal = Number(data.lista[i].subtotal.toFixed(2));
+    }
+
+    return schCestas.setCesta(data).then((res) => {
+      if (res.acknowledged) {
+        return true;
+      } else {
+        return false;
+      }
+    }).catch((err) => {
+      console.log(err);
+      return false;
     });
   }
 
   /* Obtiene la cesta, borra el  item y devuelve la cesta final */
-  borrarItemCesta(idCesta: number, idArticulo: number): Promise<CestasInterface> {
+  borrarItemCesta(idCesta: number, idArticulo: number) {
     return this.getCesta(idCesta).then((cesta) => {
         for (let i = 0; i < cesta.lista.length; i++) {
           if (cesta.lista[i]._id == idArticulo) {
@@ -98,36 +116,38 @@ export class CestaClase {
             break;
           }
         }
-        this.setCesta(cesta);
+        this.setCesta(cesta).then((result) => {
+          if (result) {
+            return cesta;
+          } else {
+            return false;
+          }
+        }).catch((err) => {
+          console.log(err);
+          return false;
+        });
         return cesta;
     }).catch((err) => {
         console.log(err);
+        return false;
     });
   }
 
-  cambiarCurrentCesta(data: CestasInterface) {
-    for(let i = 0; i < data.lista.length; i++) {
-        data.lista[i].subtotal = Number(data.lista[i].subtotal.toFixed(2));
-    }
-    this.cesta = data;
-  }
+  // cambiarCurrentCesta(data: CestasInterface) {
+  //   for(let i = 0; i < data.lista.length; i++) {
+  //       data.lista[i].subtotal = Number(data.lista[i].subtotal.toFixed(2));
+  //   }
+  //   this.cesta = data;
+  // }
 
-  /* Guarda la cesta en Mongo */
-  setCesta(data: CestasInterface) {
-    for(let i = 0; i < data.lista.length; i++) {
-      data.lista[i].subtotal = Number(data.lista[i].subtotal.toFixed(2));
-    }
-    schCestas.setCesta(data);
-    this.cesta = data;
-  }
+  // getCurrentCesta() {
+  //   return this.cesta;
+  // }
 
-  getCurrentCesta() {
-    return this.cesta;
-  }
   async limpiarCesta(unaCesta: CestasInterface, posicionPrincipal: number, posicionSecundario: number, sobraCantidadPrincipal: number, sobraCantidadSecundario: number, pideDelA: number, pideDelB: number) {
     if(pideDelA != -1) {
       if(sobraCantidadPrincipal > 0) {
-        const datosArticulo = await articulosInstance.getInfoArticulo(unaCesta.lista[posicionPrincipal]._id);
+        const datosArticulo = await tocGame.articulos.getInfoArticulo(unaCesta.lista[posicionPrincipal]._id);
         unaCesta.lista[posicionPrincipal].unidades = sobraCantidadPrincipal;
         unaCesta.lista[posicionPrincipal].subtotal = sobraCantidadPrincipal*datosArticulo.precioConIva;
       } else {
@@ -137,7 +157,7 @@ export class CestaClase {
 
     if(pideDelB != -1) {
       if(sobraCantidadSecundario > 0) {
-        const datosArticulo = await articulosInstance.getInfoArticulo(unaCesta.lista[posicionSecundario]._id);
+        const datosArticulo = await tocGame.articulos.getInfoArticulo(unaCesta.lista[posicionSecundario]._id);
         unaCesta.lista[posicionSecundario].unidades = sobraCantidadSecundario;
         unaCesta.lista[posicionSecundario].subtotal = sobraCantidadSecundario*datosArticulo.precioConIva;
       } else {
@@ -150,8 +170,8 @@ export class CestaClase {
     }
     return unaCesta;
 }
-    async insertarArticuloCesta(infoArticulo, unidades: number, infoAPeso = null) {
-        var miCesta = this.getCurrentCesta();
+    async insertarArticuloCesta(infoArticulo, unidades: number, idCesta: number, infoAPeso = null) {
+        var miCesta = await tocGame.cesta.getCesta(idCesta);
         
         if(miCesta.lista.length > 0)
         {
@@ -206,7 +226,7 @@ export class CestaClase {
         return await ofertas.buscarOfertas(miCesta, viejoIva);
     }
 
-    async addItem(idArticulo: number, idBoton: string, aPeso: boolean, infoAPeso: any) {
+    async addItem(idArticulo: number, idBoton: string, aPeso: boolean, infoAPeso: any, idCesta: number) {
         var unidades = this.udsAplicar;
         var cestaRetornar: CestasInterface = null;
         if(caja.cajaAbierta())
@@ -217,7 +237,7 @@ export class CestaClase {
                     let infoArticulo = await articulosInstance.getInfoArticulo(idArticulo);
                     if(infoArticulo) //AQUI PENSAR ALGUNA COMPROBACIÓN CUANDO NO EXISTA O FALLE ESTE GET
                     {
-                        cestaRetornar = await this.insertarArticuloCesta(infoArticulo, unidades);
+                        cestaRetornar = await this.insertarArticuloCesta(infoArticulo, unidades, idCesta);
                     }
                     else
                     {
@@ -226,7 +246,7 @@ export class CestaClase {
                 }
                 else //TIPO PESO
                 {
-                    cestaRetornar = await this.insertarArticuloCesta(infoAPeso.infoArticulo, 1, infoAPeso);
+                    cestaRetornar = await this.insertarArticuloCesta(infoAPeso.infoArticulo, 1, idCesta, infoAPeso);
                 }
             }
             catch(err)
@@ -243,9 +263,9 @@ export class CestaClase {
         this.udsAplicar = 1;
         return cestaRetornar;
     }
-    setUnidadesAplicar(unidades: number){
-        this.udsAplicar = unidades;
-    }
+    // setUnidadesAplicar(unidades: number) {
+    //     this.udsAplicar = unidades;
+    // }
 
     async recalcularIvas(cesta: CestasInterface) {
         cesta.tiposIva = {

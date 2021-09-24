@@ -1,3 +1,4 @@
+import { ArticulosInterface } from "./articulos.interface";
 import * as schArticulos from "./articulos.mongodb";
 
 export class Articulos {
@@ -15,7 +16,7 @@ export class Articulos {
     }
 
     /* Devuelve un articulo */
-    async getInfoArticulo(idArticulo: number) {
+    async getInfoArticulo(idArticulo: number): Promise<ArticulosInterface> {
         if(!this.getEstadoTarifaEspecial()) {
             return await schArticulos.getInfoArticulo(idArticulo);
         } else {

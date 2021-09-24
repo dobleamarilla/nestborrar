@@ -23,15 +23,11 @@ export async function setInfoCaja(data: CajaInterface) {
     return resultado;
 }
 
-export async function nuevoItemSincroCajas(caja: CajaForSincroInterface) {
+export async function nuevoItemSincroCajas(unaCaja) {
     await client.connect();
     const database = client.db('tocgame');
     const caja = database.collection('cajas');
-    const resultado = await caja.replaceOne({
-        _id: "CAJA"
-    },
-    data,
-    {upsert: true});
+    const resultado = await caja.insertOne(unaCaja);
     client.close();
     return resultado;
 }
