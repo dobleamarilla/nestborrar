@@ -1,8 +1,9 @@
+// 100%
 import { ArticulosInterface } from "./articulos.interface";
 import * as schArticulos from "./articulos.mongodb";
 
 export class Articulos {
-    private estadoTarifaVIP: boolean;
+    public estadoTarifaVIP: boolean;
     constructor() {
         this.estadoTarifaVIP = false;
     }

@@ -1,6 +1,5 @@
-import { conexion } from '../conexion/mongodb';
-import { CajaClase } from '../caja/caja.clase';
-
+import { CajaClase } from '../src/caja/caja.clase';
+// import { client } from '../conexion/mongodb';
 describe('Caja', () => {
   const cajaInstance = new CajaClase();
 
@@ -15,11 +14,12 @@ describe('Caja', () => {
       } else {
         expect(caja).toEqual(null);
       }
-      conexion.then((client) => {
-        client.close();
-      })
-      
+      // 
+      expect.assertions(1);
     });
-    // expect.assertions(1);
   });
 });
+
+// afterAll(() => {
+  
+// });

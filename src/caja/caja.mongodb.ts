@@ -1,33 +1,32 @@
-import { client } from "../conexion/mongodb";
-import { CajaForSincroInterface, CajaInterface } from "./caja-interface.interface";
+import { conexion } from "../conexion/mongodb";
+import { CajaForSincroInterface, CajaInterface } from "./caja.interface";
 
 export async function getInfoCaja(): Promise<any> {
-    await client.connect();
-    const database = client.db('tocgame');
+    
+    const database = (await conexion).db('tocgame');
     const caja = database.collection('cajas');
     const resultado = await caja.findOne({_id: "CAJA"});
-    client.close();
     return resultado;
 }
 
 export async function setInfoCaja(data: CajaInterface) {
-    await client.connect();
-    const database = client.db('tocgame');
+    
+    const database = (await conexion).db('tocgame');
     const caja = database.collection('cajas');
     const resultado = await caja.replaceOne({
         _id: "CAJA"
     },
     data,
     {upsert: true});
-    client.close();
+    
     return resultado;
 }
 
 export async function nuevoItemSincroCajas(unaCaja) {
-    await client.connect();
-    const database = client.db('tocgame');
+    
+    const database = (await conexion).db('tocgame');
     const caja = database.collection('cajas');
     const resultado = await caja.insertOne(unaCaja);
-    client.close();
+    
     return resultado;
 }

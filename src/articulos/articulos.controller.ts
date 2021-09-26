@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { articulosInstance } from './articulos';
+import { articulosInstance } from './articulos.clase';
 
 @Controller('articulos')
 export class ArticulosController {

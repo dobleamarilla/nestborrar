@@ -1,3 +1,4 @@
+// 100%
 import { ParametrosInterface } from "./parametros.interface";
 import * as schParametros from "./parametros.mongodb";
 
@@ -92,6 +93,6 @@ const parametrosVacios: ParametrosInterface = {
     }
 }
 
-const parametros = new ParametrosClase();
+const parametrosInstance = new ParametrosClase();
 
-export { parametros }
+export { parametrosInstance }

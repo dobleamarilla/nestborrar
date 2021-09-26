@@ -1,8 +1,7 @@
-const io = require('socket.io')({
-    serveClient: false
-});
-import { tocGame } from "../toc";
+import { io } from "socket.io-client";
+import { parametrosInstance } from "../parametros/parametros.clase";
 
+const SERVER_URL = "https://sanpedroserver.com";
 // const parametros = await tocGame.parametros.getParametros();
 // let tipoEntorno = '';
 
@@ -18,15 +17,15 @@ import { tocGame } from "../toc";
 
 class TocSockets {
     private socket: any;
-    constructor() {
-        tocGame.parametros.getParametros().then((parametros) => {
-            let tipoEntorno = "https://sanpedroserver.com";
-            if (tipoEntorno == "https://sanpedroserver.com") {
-                this.socket = (parametros == null || typeof parametros.token === 'undefined') ? io.connect(tipoEntorno) : (io.connect(tipoEntorno, {query: `token=${parametros.token}`}));
-            } else {
-                this.socket = null;
-            }
-        });
+
+    iniciarSockets() {
+        const parametros = parametrosInstance.getParametros();
+        let tipoEntorno = SERVER_URL;
+        if (tipoEntorno == SERVER_URL) {
+            this.socket = (parametros == null || typeof parametros.token === 'undefined') ? io.connect(tipoEntorno) : (io.connect(tipoEntorno, {query: `token=${parametros.token}`}));
+        } else {
+            this.socket = null;
+        }
     }
 
     emit(canal: string, data: any = null) {

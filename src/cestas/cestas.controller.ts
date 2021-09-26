@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { cestas } from './cestas-clase';
+import { cestas } from './cestas.clase';
 
 @Controller('cestas')
 export class CestasController {
@@ -48,9 +48,9 @@ export class CestasController {
         });
     }
 
-    @Post('setUnidadesAplicar')
-    setUnidadesAplicar(@Body() params) {
-        cestas.setUnidadesAplicar(params.unidades);
-        return {okey: true};
-    }
+    // @Post('setUnidadesAplicar')
+    // setUnidadesAplicar(@Body() params) {
+    //     cestas.setUnidadesAplicar(params.unidades);
+    //     return {okey: true};
+    // }
 }

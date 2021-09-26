@@ -1,18 +1,16 @@
-import { client } from "../conexion/mongodb";
+import { conexion } from "../conexion/mongodb";
 import { TicketsInterface } from "./tickets.interface";
 
 export async function getTicketsIntervalo(inicioTime: number, finalTime: number): Promise<any> {
-    await client.connect();
-    const database = client.db('tocgame');
+    const database = (await conexion).db('tocgame');
     const tickets = database.collection('tickets');
     const resultado = await (await tickets.find({timestamp: {$lte: finalTime, $gte: inicioTime}})).toArray();
-    client.close();
+    
     return resultado;
 }
 
 export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) {
-    await client.connect();
-    const database = client.db('tocgame');
+    const database = (await conexion).db('tocgame');
     const tickets = database.collection('tickets');
     const resultado = await tickets.find({
         $and: [
@@ -22,7 +20,7 @@ export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) 
         ]
     });
     const arrayResult = await resultado.toArray();
-    client.close();
+    
     let suma = 0;
     for (let i = 0; i < arrayResult.length; i++) {
         suma += arrayResult[i].total;
@@ -31,8 +29,7 @@ export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) 
 }
 
 export async function getDedudaGlovo(inicioTime: number, finalTime: number) {
-    await client.connect();
-    const database = client.db('tocgame');
+    const database = (await conexion).db('tocgame');
     const tickets = database.collection('tickets');
     const resultado = await tickets.find({
         $and: [
@@ -42,7 +39,7 @@ export async function getDedudaGlovo(inicioTime: number, finalTime: number) {
         ]
     });
     const arrayResult = await resultado.toArray();
-    client.close();
+    
     let suma = 0;
     for (let i = 0; i < arrayResult.length; i++) {
         suma += arrayResult[i].total;
@@ -51,8 +48,7 @@ export async function getDedudaGlovo(inicioTime: number, finalTime: number) {
 }
 
 export async function getTotalTkrs(inicioTime: number, finalTime: number) {
-    await client.connect();
-    const database = client.db('tocgame');
+    const database = (await conexion).db('tocgame');
     const tickets = database.collection('tickets');
     const resultado = await tickets.find({
         $and: [
@@ -62,7 +58,7 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
         ]
     });
     const arrayResult = await resultado.toArray();
-    client.close();
+    
     let suma = 0;
     for (let i = 0; i < arrayResult.length; i++) {
         suma += arrayResult[i].total;
@@ -71,7 +67,7 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
 }
 
 // export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) {
-//     await client.connect();
+//     await 
 //     const database = client.db('tocgame');
 //     const tickets = database.collection('tickets');
 //     const resultado = await tickets.aggregate([{$match: {$and: [
@@ -79,7 +75,7 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
 //         {timestamp: {$gte: inicioTime}},
 //         {timestamp: {$lte: finalTime}}
 //     ]}}, {$group: {_id: null, suma: {$sum: "$total"}}}]);
-//     client.close();
+//     
 
 //     return resultado;
 // }

@@ -1,14 +1,15 @@
 // 100%
-import { tocGame } from "src/toc";
+import { globalInstance } from "../global/global.clase";
 import { socket } from "../conexion/socket";
-import { TrabajadoresInterface } from "./trabajadores.interface";
+import { SincroFichajesInterface, TrabajadoresInterface } from "./trabajadores.interface";
 import * as schTrabajadores from "./trabajadores.mongodb";
+import { parametrosInstance } from "../parametros/parametros.clase";
 
 export class TrabajadoresClase {
 
     actualizarTrabajadores() {
-        tocGame.setStopNecesario(true);
-        const params = tocGame.parametros.getParametros();
+        globalInstance.setStopNecesario(true);
+        const params = parametrosInstance.getParametros();
         socket.emit('descargar-trabajadores', { licencia: params.licencia, database: params.database, codigoTienda: params.codigoTienda});
     }
 
@@ -41,7 +42,7 @@ export class TrabajadoresClase {
     setCurrentTrabajador(idTrabajador: number): Promise<boolean> {
         return schTrabajadores.setCurrentIdTrabajador(idTrabajador).then((res) => {
             if (res.acknowledged) {
-                tocGame.parametros.actualizarParametros();
+                parametrosInstance.actualizarParametros();
                 return true;
             } else {
                 return false;
@@ -60,6 +61,7 @@ export class TrabajadoresClase {
         return schTrabajadores.getTrabajador(idTrabajador);
     }
 
+    /* MongoDB Fichado = false + nuevo item sincro */
     ficharTrabajador(idTrabajador: number): Promise<boolean> {
         return schTrabajadores.ficharTrabajador(idTrabajador).then((res) => {
             if (res.acknowledged) {
@@ -82,8 +84,9 @@ export class TrabajadoresClase {
         });
     }
 
+    /* MongoDB Fichado = false + nuevo item sincro */
     desficharTrabajador(idTrabajador: number): Promise<boolean> {
-        return schTrabajadores.ficharTrabajador(idTrabajador).then((res) => {
+        return schTrabajadores.desficharTrabajador(idTrabajador).then((res) => {
             if (res.acknowledged) {
                 return this.nuevoFichajesSincro("SALIDA", idTrabajador).then((res2) => {
                     if (res2.acknowledged) {
@@ -104,9 +107,10 @@ export class TrabajadoresClase {
         });
     }
 
+    /* Inserta en el sincro un nuevo movimiento de fichaje */
     nuevoFichajesSincro(tipo: "ENTRADA" | "SALIDA", idTrabajador: number) {
         const auxTime = new Date();
-        const objGuardar = {
+        const objGuardar: SincroFichajesInterface = {
             _id: Date.now(),
             infoFichaje: {
                 idTrabajador: idTrabajador,
@@ -119,9 +123,31 @@ export class TrabajadoresClase {
                     seconds: auxTime.getSeconds()
                 }
             },
-            tipo: tipo
+            tipo: tipo,
+            enviado: false,
+            enTransito: false
         };
         return schTrabajadores.insertNuevoFichaje(objGuardar);
+    }
+
+    getFichados(): Promise<TrabajadoresInterface[]> {
+        return schTrabajadores.buscarTrabajadoresFichados().then((arrayFichados: TrabajadoresInterface[]) => {
+            return arrayFichados;
+        }).catch((err) => {
+            console.log(err);
+            return null;
+        });
+        // sch.getTrabajadoresFichados().then((arrayTrabajadoresFichados) => {
+        //     if (arrayTrabajadoresFichados != null) {
+        //         if(arrayTrabajadoresFichados.length > 0) {
+        //             return true;
+        //         } else {
+        //             return false;
+        //         }
+        //     } else {
+        //         return false;
+        //     }
+        // });
     }
 }
 

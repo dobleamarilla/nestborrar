@@ -6,3 +6,5 @@ export class MovimientosClase {
         return schMovimientos.getMovimientosIntervalo(inicioTime, finalTime);
     }
 }
+
+export const movimientosInstance = new MovimientosClase();

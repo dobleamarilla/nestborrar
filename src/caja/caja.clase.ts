@@ -1,11 +1,14 @@
 // 100%
-import { CajaForSincroInterface, CajaInterface, cajaVacia } from "./caja-interface.interface";
+import { CajaForSincroInterface, CajaInterface } from "./caja.interface";
 import * as schCajas from "./caja.mongodb";
 import * as schTickets from "../tickets/tickets.mongodb";
 import * as schMonedas from "../monedas/monedas.mongodb";
-import { tocGame } from "src/toc";
-import { TicketsInterface } from "src/tickets/tickets.interface";
-import { MovimientosInterface } from "src/movimientos/movimientos.interface";
+import { TicketsInterface } from "../tickets/tickets.interface";
+import { MovimientosInterface } from "../movimientos/movimientos.interface";
+import { trabajadoresInstance } from "../trabajadores/trabajadores.clase";
+import { parametrosInstance } from "../parametros/parametros.clase";
+import { movimientosInstance } from "../movimientos/movimientos.clase";
+
 const TIPO_ENTRADA = 'ENTRADA';
 const TIPO_SALIDA = 'SALIDA';
 
@@ -74,7 +77,7 @@ export class CajaClase {
             cajaActual.totalCierre = total;
             cajaActual.detalleCierre = detalleCierre;
             cajaActual.finalTime = Date.now();
-            cajaActual.idDependienta = await tocGame.trabajadores.getCurrentIdTrabajador(); // this.getCurrentTrabajador()._id;
+            cajaActual.idDependienta = await trabajadoresInstance.getCurrentIdTrabajador(); // this.getCurrentTrabajador()._id;
             cajaActual.totalDatafono3G = totalDatafono3G;
             cajaActual.totalClearOne = totalClearOne;
             cajaActual = await this.calcularDatosCaja(cajaActual);
@@ -85,9 +88,9 @@ export class CajaClase {
     
             let objEmail = {
                 caja: cajaActual,
-                nombreTienda: tocGame.parametros.getParametros().nombreTienda,
-                nombreDependienta: (await tocGame.trabajadores.getCurrentTrabajador()).nombre,
-                arrayMovimientos: await tocGame.movimientos.getMovimientosIntervalo(cajaActual.inicioTime, cajaActual.finalTime), // ipcRenderer.sendSync('get-rango-movimientos', {fechaInicio: cajaActual.inicioTime, fechaFinal: cajaActual.finalTime}),
+                nombreTienda: parametrosInstance.getParametros().nombreTienda,
+                nombreDependienta: (await trabajadoresInstance.getCurrentTrabajador()).nombre,
+                arrayMovimientos: await movimientosInstance.getMovimientosIntervalo(cajaActual.inicioTime, cajaActual.finalTime), // ipcRenderer.sendSync('get-rango-movimientos', {fechaInicio: cajaActual.inicioTime, fechaFinal: cajaActual.finalTime}),
                 deudaGlovo: deudaGlovo,
                 deudaDeliveroo: deudaDeliveroo,
                 totalTkrs: totalTkrs
@@ -164,12 +167,12 @@ export class CajaClase {
 
     async calcularDatosCaja(unaCaja: CajaInterface): Promise<CajaInterface> {
         var arrayTicketsCaja: TicketsInterface[] = await schTickets.getTicketsIntervalo(unaCaja.inicioTime, unaCaja.finalTime);
-        var arrayMovimientos: MovimientosInterface[] = await tocGame.movimientos.getMovimientosIntervalo(unaCaja.inicioTime, unaCaja.finalTime);
+        var arrayMovimientos: MovimientosInterface[] = await movimientosInstance.getMovimientosIntervalo(unaCaja.inicioTime, unaCaja.finalTime);
         var totalTickets = 0;
-        var nombreTrabajador = (await tocGame.trabajadores.getCurrentTrabajador()).nombre;
+        var nombreTrabajador = (await trabajadoresInstance.getCurrentTrabajador()).nombre;
         var descuadre = 0;
         var nClientes = 0;
-        const params = tocGame.parametros.getParametros();
+        const params = parametrosInstance.getParametros();
         let currentCaja = await this.getInfoCaja();
         if(arrayTicketsCaja.length > 0) {
             currentCaja.primerTicket = arrayTicketsCaja[0]._id;
@@ -264,6 +267,4 @@ export class CajaClase {
     }
 }
 
-const caja = new CajaClase();
-
-export { caja }
+export const cajaInstance = new CajaClase();

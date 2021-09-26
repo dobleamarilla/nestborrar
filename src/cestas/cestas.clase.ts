@@ -1,10 +1,10 @@
+// 100%
 import * as schCestas from './cestas.mongodb';
 import { CestasInterface } from './cestas.interface';
 import { construirObjetoIvas, crearCestaVacia } from '../funciones/funciones';
-import { articulosInstance } from '../articulos/articulos';
-import { ofertas } from '../ofertas/ofertas-clase';
-import { caja } from '../caja/caja';
-import { tocGame } from 'src/toc';
+import { articulosInstance } from '../articulos/articulos.clase';
+import { ofertas } from '../promociones/promociones.clase';
+import { cajaInstance } from '../caja/caja.clase';
 
 /* Siempre cargar la cesta desde MongoDB */
 export class CestaClase {
@@ -147,7 +147,7 @@ export class CestaClase {
   async limpiarCesta(unaCesta: CestasInterface, posicionPrincipal: number, posicionSecundario: number, sobraCantidadPrincipal: number, sobraCantidadSecundario: number, pideDelA: number, pideDelB: number) {
     if(pideDelA != -1) {
       if(sobraCantidadPrincipal > 0) {
-        const datosArticulo = await tocGame.articulos.getInfoArticulo(unaCesta.lista[posicionPrincipal]._id);
+        const datosArticulo = await articulosInstance.getInfoArticulo(unaCesta.lista[posicionPrincipal]._id);
         unaCesta.lista[posicionPrincipal].unidades = sobraCantidadPrincipal;
         unaCesta.lista[posicionPrincipal].subtotal = sobraCantidadPrincipal*datosArticulo.precioConIva;
       } else {
@@ -157,7 +157,7 @@ export class CestaClase {
 
     if(pideDelB != -1) {
       if(sobraCantidadSecundario > 0) {
-        const datosArticulo = await tocGame.articulos.getInfoArticulo(unaCesta.lista[posicionSecundario]._id);
+        const datosArticulo = await articulosInstance.getInfoArticulo(unaCesta.lista[posicionSecundario]._id);
         unaCesta.lista[posicionSecundario].unidades = sobraCantidadSecundario;
         unaCesta.lista[posicionSecundario].subtotal = sobraCantidadSecundario*datosArticulo.precioConIva;
       } else {
@@ -171,7 +171,7 @@ export class CestaClase {
     return unaCesta;
 }
     async insertarArticuloCesta(infoArticulo, unidades: number, idCesta: number, infoAPeso = null) {
-        var miCesta = await tocGame.cesta.getCesta(idCesta);
+        var miCesta = await this.getCesta(idCesta);
         
         if(miCesta.lista.length > 0)
         {
@@ -229,7 +229,7 @@ export class CestaClase {
     async addItem(idArticulo: number, idBoton: string, aPeso: boolean, infoAPeso: any, idCesta: number) {
         var unidades = this.udsAplicar;
         var cestaRetornar: CestasInterface = null;
-        if(caja.cajaAbierta())
+        if(cajaInstance.cajaAbierta())
         {
             try
             {
@@ -279,19 +279,13 @@ export class CestaClase {
             importe2: 0,
             importe3: 0
         }
-        for(let i = 0; i < cesta.lista.length; i++)
-        {
-            if(cesta.lista[i].promocion.esPromo === false)
-            {
+        for(let i = 0; i < cesta.lista.length; i++) {
+            if(cesta.lista[i].promocion.esPromo === false) {
                 let infoArticulo = await articulosInstance.getInfoArticulo(cesta.lista[i]._id);
                 cesta.tiposIva = construirObjetoIvas(infoArticulo, cesta.lista[i].unidades, cesta.tiposIva);
             }
-            else
-            {
-                if(cesta.lista[i].promocion.esPromo === true)
-                {
-                    if(cesta.lista[i].nombre == 'Oferta combo')
-                    {
+            else if(cesta.lista[i].promocion.esPromo === true) {
+                    if(cesta.lista[i].nombre == 'Oferta combo') {
                         let infoArticuloPrincipal = await articulosInstance.getInfoArticulo(cesta.lista[i].promocion.infoPromo.idPrincipal);
                         infoArticuloPrincipal.precioConIva = cesta.lista[i].promocion.infoPromo.precioRealPrincipal/(cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadPrincipal);
                         cesta.tiposIva = construirObjetoIvas(infoArticuloPrincipal, cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadPrincipal, cesta.tiposIva);
@@ -300,17 +294,15 @@ export class CestaClase {
                         infoArticuloSecundario.precioConIva = cesta.lista[i].promocion.infoPromo.precioRealSecundario/(cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadSecundario);
                         cesta.tiposIva = construirObjetoIvas(infoArticuloSecundario, cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadSecundario, cesta.tiposIva);
                     }
-                    else
-                    {
-                        if(cesta.lista[i].nombre == 'Oferta individual')
-                        {
+                    else {
+                        if(cesta.lista[i].nombre == 'Oferta individual') {
                             let infoArticulo = await articulosInstance.getInfoArticulo(cesta.lista[i].promocion.infoPromo.idPrincipal);
                             infoArticulo.precioConIva = cesta.lista[i].promocion.infoPromo.precioRealPrincipal/(cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadPrincipal);
                             cesta.tiposIva = construirObjetoIvas(infoArticulo, cesta.lista[i].promocion.infoPromo.unidadesOferta*cesta.lista[i].promocion.infoPromo.cantidadPrincipal, cesta.tiposIva);
                         }
                     }
-                }
-            }
+                  }
+            
         }
         return cesta;
     }

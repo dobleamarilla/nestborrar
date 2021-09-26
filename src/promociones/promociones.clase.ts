@@ -1,16 +1,18 @@
-import * as schArticulos from "../schemas/articulos";
-import * as schPromociones from "../schemas/promociones";
-import {cestas} from "../cestas/cestas-clase";
+// 100%
+
+import { articulosInstance } from "../articulos/articulos.clase";
+import {cestas} from "../cestas/cestas.clase";
 import { CestasInterface } from "../cestas/cestas.interface";
-import { PromocionesInterface } from "../promociones/promociones.interface";
+import { PromocionesInterface } from "./promociones.interface";
+import * as schPromociones from "./promociones.mongodb";
 
 export class OfertasClase {
     private promociones: PromocionesInterface[];
 
-    constructor(){
-        schPromociones.getPromociones().then(res=>{
-            if(res.length > 0) {
-                this.promociones = res;
+    constructor() {
+        schPromociones.getPromociones().then((arrayPromos: PromocionesInterface[]) => {
+            if(arrayPromos.length > 0) {
+                this.promociones = arrayPromos;
             }
             else {
                 this.promociones = [];
@@ -23,10 +25,8 @@ export class OfertasClase {
     }
 
     existeArticuloParaOfertaEnCesta(cesta: CestasInterface, idArticulo: number, unidadesNecesarias: number) {
-        for(let i = 0; i < cesta.lista.length; i++)
-        {
-            if(cesta.lista[i]._id === idArticulo && cesta.lista[i].unidades >= unidadesNecesarias)
-            {
+        for(let i = 0; i < cesta.lista.length; i++) {
+            if(cesta.lista[i]._id === idArticulo && cesta.lista[i].unidades >= unidadesNecesarias) {
                 return i;
             }
         }
@@ -80,7 +80,7 @@ export class OfertasClase {
         }
         return cesta;
     }
-    async buscarOfertas(unaCesta: CestasInterface, viejoIva) {
+    async buscarOfertas(unaCesta: CestasInterface, viejoIva): Promise<CestasInterface> {
         var hayOferta = false;
         unaCesta = this.deshacerOfertas(unaCesta); //ahora no hace nada
         for(let i = 0; i < this.promociones.length; i++)
@@ -176,12 +176,12 @@ export class OfertasClase {
         let precioTotalSinOferta        = 0;
         if(idPrincipal != 0)
         {
-            precioSinOfertaPrincipal = (await schArticulos.getPrecio(idPrincipal)).precioConIva;
+            precioSinOfertaPrincipal = (await articulosInstance.getInfoArticulo(idPrincipal)).precioConIva;
         }
 
         if(idSecundario != 0)
         {
-            precioSinOfertaSecundario = (await schArticulos.getPrecio(idSecundario)).precioConIva;
+            precioSinOfertaSecundario = (await articulosInstance.getInfoArticulo(idSecundario)).precioConIva;
         }
 
         if(tipoPromo === 1) //COMBO
@@ -202,7 +202,7 @@ export class OfertasClase {
         let precioTotalSinOferta        = 0;
         if(idPrincipal != 0)
         {
-            precioSinOfertaPrincipal = (await schArticulos.getPrecio(idPrincipal)).precioConIva;
+            precioSinOfertaPrincipal = (await articulosInstance.getInfoArticulo(idPrincipal)).precioConIva;
         }
 
         if(tipoPromo === 2) //INDIVIDUAL
