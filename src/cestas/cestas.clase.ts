@@ -30,7 +30,27 @@ export class CestaClase {
   }
 
   getCestaRandom(): Promise<CestasInterface> {
-    return schCestas.getUnaCesta();
+    return schCestas.getUnaCesta().then((cesta) => {
+      if (cesta != null) {
+        return cesta
+      } else {
+        // No hay ninguna cesta. Crear una.
+        console.log("Entro aquí");
+        const nueva = this.nuevaCestaVacia();
+        return this.setCesta(nueva).then((resultado) => {
+          if (resultado) {
+            return nueva;
+          } else {
+            throw "Error al crear nueva cesta vacía (por que no hay ninguna)";
+          }
+        }).catch((err) => {
+          throw err;
+        });
+      }
+    }).catch((err) => {
+      console.log(err);
+      return null;
+    });
   }
 
   // getCurrentId() {
@@ -90,12 +110,11 @@ export class CestaClase {
   }
 
   /* Guarda la cesta en Mongo */
-  setCesta(data: CestasInterface): Promise<boolean> {
-    for(let i = 0; i < data.lista.length; i++) {
-      data.lista[i].subtotal = Number(data.lista[i].subtotal.toFixed(2));
+  setCesta(cesta: CestasInterface): Promise<boolean> {
+    for(let i = 0; i < cesta.lista.length; i++) {
+      cesta.lista[i].subtotal = Number(cesta.lista[i].subtotal.toFixed(2));
     }
-
-    return schCestas.setCesta(data).then((res) => {
+    return schCestas.setCesta(cesta).then((res) => {
       if (res.acknowledged) {
         return true;
       } else {
@@ -169,10 +188,10 @@ export class CestaClase {
         }
     }
     return unaCesta;
-}
+  }
     async insertarArticuloCesta(infoArticulo, unidades: number, idCesta: number, infoAPeso = null) {
         var miCesta = await this.getCesta(idCesta);
-        
+        console.log("El ID de la cesta es: ", idCesta);
         if(miCesta.lista.length > 0)
         {
             let encontrado = false;
@@ -263,9 +282,9 @@ export class CestaClase {
         this.udsAplicar = 1;
         return cestaRetornar;
     }
-    // setUnidadesAplicar(unidades: number) {
-    //     this.udsAplicar = unidades;
-    // }
+    setUnidadesAplicar(unidades: number) {
+        this.udsAplicar = unidades;
+    }
 
     async recalcularIvas(cesta: CestasInterface) {
         cesta.tiposIva = {

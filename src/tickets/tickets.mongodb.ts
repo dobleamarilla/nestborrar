@@ -66,6 +66,7 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
     return suma;
 }
 
+
 // export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) {
 //     await 
 //     const database = client.db('tocgame');

@@ -66,6 +66,7 @@ const parametrosVacios: ParametrosInterface = {
 
     todoInstalado(): boolean {
         const params = this.getParametros();
+        console.log(params);
         if (params._id === '' || params.licencia === 0 || params.codigoTienda === 0) {
             return false;
         } else {

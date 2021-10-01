@@ -7,13 +7,18 @@ export class MenusClase {
         this.stopNecesario = false;
     }
 
-    // clickMenu(nombreMenu: string) {
-    //     return schTeclas.getTecladoMain(nombreMenu);
-    // }
+    clickMenu(nombreMenu: string) {
+        return schMenus.getTecladoMain(nombreMenu);
+    }
+
     getStopNecesario() {
         return this.stopNecesario;
     }
-    // getMenus() {
-    //     return schMenus.getMenus();
-    // }
+
+    getMenus() {
+        return schMenus.getMenus();
+    }
+
 }
+
+export const menusInstance = new MenusClase();

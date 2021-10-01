@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TicketsController } from './tickets/tickets.controller';
 import { TrabajadoresController } from './trabajadores/trabajadores.controller';
+import { MenusController } from './menus/menus.controller'; // 100%
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { TrabajadoresController } from './trabajadores/trabajadores.controller';
   ],
   controllers: [
     ArticulosController, 
-    // TeclasMenusController, 
+    MenusController,
     TecladoController, 
     CestasController, 
     ParametrosController, 

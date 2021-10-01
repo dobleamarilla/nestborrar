@@ -5,7 +5,6 @@ export async function getUnaCesta(): Promise<any> {
     const database = (await conexion).db('tocgame');
     const cesta = database.collection('cestas');
     const resultado = await cesta.findOne();
-    
     return resultado;
 }
 
@@ -39,7 +38,7 @@ export async function setCesta(cesta: CestasInterface) {
     const resultado = await unaCesta.replaceOne({_id: cesta._id}, {
         tiposIva: cesta.tiposIva,
         lista: cesta.lista
-    });
+    }, {upsert: true});
     
     return resultado;
 }
