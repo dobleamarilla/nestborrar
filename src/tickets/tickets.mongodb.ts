@@ -66,6 +66,22 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
     return suma;
 }
 
+export async function getUltimoTicket() {
+    const database = (await conexion).db('tocgame');
+    const parametros = database.collection('parametros');
+    const resultado: number = (await parametros.findOne({_id: "PARAMETROS"})).ultimoTicket;
+    
+    return resultado;
+}
+
+export async function nuevoTicket(ticket: any) {
+    const database = (await conexion).db('tocgame');
+    const tickets = database.collection('tickets');
+    const resultado = tickets.insertOne(ticket);
+
+    return resultado;
+}
+
 
 // export async function getDedudaDeliveroo(inicioTime: number, finalTime: number) {
 //     await 

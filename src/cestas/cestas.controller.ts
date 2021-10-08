@@ -54,7 +54,6 @@ export class CestasController {
     @Post('borrarItemCesta')
     borrarItemCesta(@Body() params) {
         return cestas.borrarItemCesta(params._id, params.idArticulo).then((res) => {
-            console.log("Ezee: ", res);
             return {
                 okey: true,
                 cestaNueva: res

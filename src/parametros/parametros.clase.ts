@@ -66,7 +66,6 @@ const parametrosVacios: ParametrosInterface = {
 
     todoInstalado(): boolean {
         const params = this.getParametros();
-        console.log(params);
         if (params._id === '' || params.licencia === 0 || params.codigoTienda === 0) {
             return false;
         } else {
@@ -90,6 +89,19 @@ const parametrosVacios: ParametrosInterface = {
         }).catch((err) => {
             console.log(err);
             this.parametros = parametrosVacios;
+        });
+    }
+
+    setUltimoTicket(idTicket: number) {
+        return schParametros.setUltimoTicket(idTicket).then((res) => {
+            if (res.acknowledged) {
+                return true;
+            } else {
+                return false;
+            }
+        }).catch((err) => {
+            console.log(err);
+            return false;
         });
     }
 }

@@ -16,3 +16,11 @@ export async function setParametros(params: ParametrosInterface) {
     
     return resultado;
 }
+
+export async function setUltimoTicket(idTicket: number) {
+    const database = (await conexion).db('tocgame');
+    const parametros = database.collection('parametros');
+    const resultado = await parametros.updateOne({_id: "PARAMETROS"}, {$set: {"ultimoTicket": idTicket}}, {upsert: true});
+    
+    return resultado;
+}

@@ -69,7 +69,7 @@ export class CajaClase {
         return schCajas.nuevoItemSincroCajas(cajaInsertar);
     }
 
-    async cerrarCaja(total: number, detalleCierre, guardarInfoMonedas, totalDatafono3G: number, totalClearOne: number) { //Promise<boolean> {
+    async cerrarCaja(total: number, detalleCierre, guardarInfoMonedas, totalDatafono3G: number) { //Promise<boolean> {
         let estaAbierta = await this.cajaAbierta();
 
         if (estaAbierta) {
@@ -79,7 +79,7 @@ export class CajaClase {
             cajaActual.finalTime = Date.now();
             cajaActual.idDependienta = await trabajadoresInstance.getCurrentIdTrabajador(); // this.getCurrentTrabajador()._id;
             cajaActual.totalDatafono3G = totalDatafono3G;
-            cajaActual.totalClearOne = totalClearOne;
+            cajaActual.totalClearOne = 0;
             cajaActual = await this.calcularDatosCaja(cajaActual);
     
             const deudaDeliveroo = await schTickets.getDedudaDeliveroo(cajaActual.inicioTime, cajaActual.finalTime);

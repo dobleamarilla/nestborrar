@@ -53,6 +53,29 @@ export class TrabajadoresClase {
         });
     }
 
+    setCurrentTrabajadorPorNombre(nombre: string): Promise<boolean> {
+        return schTrabajadores.getTrabajadorPorNombre(nombre).then((infoTrabajador: TrabajadoresInterface) => {
+            if (infoTrabajador != null) {
+                return schTrabajadores.setCurrentIdTrabajador(infoTrabajador._id).then((res) => {
+                    if (res.acknowledged) {
+                        parametrosInstance.actualizarParametros();
+                        return true;
+                    } else {
+                        return false;
+                    };
+                }).catch((err) => {
+                    console.log(err);
+                    return false;
+                });
+            } else {
+                return false;
+            }
+        }).catch((err) => {
+            return false;
+        });
+
+    }
+
     getTrabajadoresFichados() {
         return schTrabajadores.getTrabajadoresFichados();
     }

@@ -18,4 +18,24 @@ export class TicketsController {
             return [];
         });
     }
+
+    @Post('crearTicketEfectivo')
+    crearTicketEfectivo(@Body() params) {
+        return ticketsInstance.crearTicketEfectivo(params.total, params.idCesta).then((res) => {
+            if (res) {
+                return {
+                    error: false
+                }
+            } else {
+                return {
+                    error: true
+                }
+            }
+        }).catch((err) => {
+            console.log(err);
+            return {
+                error: true
+            }
+        });
+    }
 }

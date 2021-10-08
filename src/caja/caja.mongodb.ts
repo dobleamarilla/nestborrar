@@ -30,3 +30,12 @@ export async function nuevoItemSincroCajas(unaCaja) {
     
     return resultado;
 }
+
+// export async function contarClearOne(unaCaja) {
+    
+//     const database = (await conexion).db('tocgame');
+//     const caja = database.collection('cajas');
+//     const resultado = await caja.insertOne(unaCaja);
+    
+//     return resultado;
+// }

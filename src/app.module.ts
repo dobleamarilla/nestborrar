@@ -9,6 +9,7 @@ import { join } from 'path';
 import { TicketsController } from './tickets/tickets.controller';
 import { TrabajadoresController } from './trabajadores/trabajadores.controller';
 import { MenusController } from './menus/menus.controller'; // 100%
+import { CajaController } from './caja/caja.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { MenusController } from './menus/menus.controller'; // 100%
     CestasController, 
     ParametrosController, 
     TicketsController, 
-    TrabajadoresController],
+    TrabajadoresController, CajaController],
   providers: [],
 })
 export class AppModule {}

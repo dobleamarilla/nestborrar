@@ -1,9 +1,8 @@
 import { conexion } from "../conexion/mongodb";
-import { SincroFichajesInterface } from "./trabajadores.interface";
 
 export async function getCurrentIdTrabajador() {
     const database = (await conexion).db('tocgame');
-    const parametros = database.collection('Parametros');
+    const parametros = database.collection('parametros');
     const resultado = await parametros.findOne({_id: "PARAMETROS"});
     
     return resultado;
@@ -17,11 +16,20 @@ export async function getTrabajador(idTrabajador: number): Promise<any> {
     return resultado;
 }
 
+export async function getTrabajadorPorNombre(nombre: string) {
+    const database = (await conexion).db('tocgame');
+    const trabajadores = database.collection('trabajadores');
+    const resultado = await trabajadores.findOne({nombre: nombre}); //_id y idTrabajador siempre son iguales (duplicados)
+    
+    return resultado;
+}
+
 export async function setCurrentIdTrabajador(idTrabajador: number) {
     const database = (await conexion).db('tocgame');
-    const parametros = database.collection('Parametros');
-    const resultado = await parametros.updateOne({_id: "PARAMETROS"}, {idCurrentTrabajador: idTrabajador});
-    
+    const parametros = database.collection('parametros');
+
+    const resultado = await parametros.updateOne({_id: "PARAMETROS"}, { $set: { "idCurrentTrabajador": idTrabajador }}, {upsert: true} );
+
     return resultado;
 }
 
