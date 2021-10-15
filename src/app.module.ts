@@ -10,6 +10,7 @@ import { TicketsController } from './tickets/tickets.controller';
 import { TrabajadoresController } from './trabajadores/trabajadores.controller';
 import { MenusController } from './menus/menus.controller'; // 100%
 import { CajaController } from './caja/caja.controller';
+import { ClientesController } from './clientes/clientes.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { CajaController } from './caja/caja.controller';
     CestasController, 
     ParametrosController, 
     TicketsController, 
-    TrabajadoresController, CajaController],
+    TrabajadoresController, CajaController, ClientesController],
   providers: [],
 })
 export class AppModule {}

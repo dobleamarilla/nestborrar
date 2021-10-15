@@ -75,7 +75,7 @@ export class CajaClase {
         }).catch((err) => {
             console.log(err);
             return false;
-        }); 
+        });
     }
 
     nuevoItemSincroCajas(caja: CajaInterface) {

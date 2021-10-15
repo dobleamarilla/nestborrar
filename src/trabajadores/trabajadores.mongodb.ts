@@ -8,6 +8,16 @@ export async function getCurrentIdTrabajador() {
     return resultado;
 }
 
+export async function buscar(busqueda: string) {
+    const database = (await conexion).db('tocgame');
+    const trabajadores = database.collection('trabajadores');
+    const resultado = await trabajadores.find({ $or: [{ "nombre": { '$regex': new RegExp(busqueda, "i") } }, { "nombreCorto": { '$regex': new RegExp(busqueda, "i") } }] }, {limit: 4});
+
+    const arrayTrabajadores = await resultado.toArray();
+    
+    return arrayTrabajadores;
+}
+
 export async function getTrabajador(idTrabajador: number): Promise<any> {
     const database = (await conexion).db('tocgame');
     const trabajadores = database.collection('trabajadores');

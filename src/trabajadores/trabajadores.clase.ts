@@ -7,6 +7,20 @@ import { parametrosInstance } from "../parametros/parametros.clase";
 
 export class TrabajadoresClase {
 
+    buscar(busqueda: string) {
+        console.log("xd :", busqueda)
+        return schTrabajadores.buscar(busqueda).then((res: TrabajadoresInterface[]) => {
+            if (res.length > 0) {
+                return res;
+            } else {
+                return [];
+            }
+        }).catch((err) => {
+            console.log(err);
+            return [];
+        });
+    }
+
     actualizarTrabajadores() {
         globalInstance.setStopNecesario(true);
         const params = parametrosInstance.getParametros();

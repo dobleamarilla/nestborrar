@@ -57,4 +57,10 @@ export class TrabajadoresController {
             return { error: true };
         });
     }
+
+    @Post('buscar')
+    buscar(@Body() params) {
+        console.log("JA: ", params.busqueda)
+        return trabajadoresInstance.buscar(params.busqueda);
+    }
 }
