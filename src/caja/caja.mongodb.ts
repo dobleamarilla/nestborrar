@@ -25,8 +25,8 @@ export async function setInfoCaja(data: CajaInterface) {
 export async function nuevoItemSincroCajas(unaCaja) {
     
     const database = (await conexion).db('tocgame');
-    const caja = database.collection('cajas');
-    const resultado = await caja.insertOne(unaCaja);
+    const sincroCajas = database.collection('sincro-cajas');
+    const resultado = await sincroCajas.insertOne(unaCaja);
     
     return resultado;
 }
