@@ -1,11 +1,13 @@
 pipeline {
-    agent { label "tpv"}
+    agent any
 
     stages {
         stage('Paso 1: Crear ficheros') {
             steps {
-                sh 'touch /home/ubuntu/muahahaha.txt'
-                sh 'touch /home/ubuntu/otroxD.sh'
+                node('tpv') {
+                    sh 'touch /home/ubuntu/muahahaha.txt'
+                    sh 'touch /home/ubuntu/otroxD.sh'
+                }
             }
         }
     }
