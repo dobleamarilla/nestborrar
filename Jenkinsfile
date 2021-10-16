@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Paso 1: Crear ficheros') {
             steps {
-                cd ~
-                touch muahahaha.txt
-                touch otroxD.sh
+                sh 'cd ~'
+                sh 'touch muahahaha.txt'
+                sh 'touch otroxD.sh'
             }
         }
     }
