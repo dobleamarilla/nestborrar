@@ -1,5 +1,5 @@
 pipeline {
-    agent { label "tpv1"}
+    agent { label "tpv"}
 
     stages {
         stage('Paso 1: Crear ficheros') {
