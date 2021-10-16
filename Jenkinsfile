@@ -1,20 +1,12 @@
 pipeline {
-    agent any
+    agent { label "maquina1"}
 
     stages {
-        stage('Build') {
+        stage('Paso 1: Crear ficheros') {
             steps {
-                echo 'Building..'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying je....'
+                cd ~
+                touch muahahaha.txt
+                touch otroxD.sh
             }
         }
     }
