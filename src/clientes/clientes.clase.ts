@@ -15,5 +15,14 @@ export class Clientes {
             return [];
         });
     }
+
+    getClienteByID(idCliente: string): Promise<ClientesInterface> {
+        return schClientes.getClieneteByID(idCliente).then((res: ClientesInterface) => {
+            return res;
+        }).catch((err) => {
+            console.log(err);
+            return null;
+        });
+    }
 }
 export const clienteInstance = new Clientes();

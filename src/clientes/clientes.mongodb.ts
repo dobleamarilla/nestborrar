@@ -7,3 +7,10 @@ export async function buscar(busqueda: string): Promise<any> {
     const arrayResult = await resultado.toArray();
     return arrayResult;
 }
+
+export async function getClieneteByID(idCliente: string): Promise<any> {
+    const database = (await conexion).db('tocgame');
+    const clientes = database.collection('clientes');
+    const resultado = await clientes.findOne({ id: idCliente });
+    return resultado;
+}

@@ -1,6 +1,13 @@
 import { conexion } from "../conexion/mongodb";
 import { TicketsInterface } from "./tickets.interface";
 
+export async function getTicketByID(idTicket: number): Promise <any> {
+    const database = (await conexion).db('tocgame');
+    const tickets = database.collection('tickets');
+    const resultado = await tickets.findOne({_id: idTicket});
+    return resultado;
+}
+
 export async function getTicketsIntervalo(inicioTime: number, finalTime: number): Promise<any> {
     const database = (await conexion).db('tocgame');
     const tickets = database.collection('tickets');

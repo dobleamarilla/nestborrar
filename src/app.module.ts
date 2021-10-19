@@ -11,6 +11,8 @@ import { TrabajadoresController } from './trabajadores/trabajadores.controller';
 import { MenusController } from './menus/menus.controller'; // 100%
 import { CajaController } from './caja/caja.controller';
 import { ClientesController } from './clientes/clientes.controller';
+import { ImpresoraController } from './impresora/impresora.controller';
+import { SocketGateway } from './sockets.gateway';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { ClientesController } from './clientes/clientes.controller';
     CestasController, 
     ParametrosController, 
     TicketsController, 
-    TrabajadoresController, CajaController, ClientesController],
-  providers: [],
+    TrabajadoresController, CajaController, ClientesController, ImpresoraController],
+  providers: [SocketGateway]  
 })
 export class AppModule {}
