@@ -1,6 +1,7 @@
 // 100%
 import { ParametrosInterface } from "./parametros.interface";
 import * as schParametros from "./parametros.mongodb";
+import * as schTickets from "../tickets/tickets.mongodb";
 
 const TIPO_USB = 'USB';
 const TIPO_SERIE = 'SERIE';
@@ -35,7 +36,12 @@ const parametrosVacios: ParametrosInterface = {
     constructor() {
         schParametros.getParametros().then((infoParams: ParametrosInterface) => {
             if (infoParams != null) {
-                this.parametros = infoParams;
+                schTickets.getUltimoTicket().then((ultimoIDTicket) => {
+                    infoParams.ultimoTicket = ultimoIDTicket;
+                    this.parametros = infoParams;
+                }).catch((err) => {
+                    console.log(err);
+                });
             } else {
                 this.parametros = parametrosVacios;
             }

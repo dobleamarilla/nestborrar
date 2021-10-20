@@ -73,12 +73,26 @@ export async function getTotalTkrs(inicioTime: number, finalTime: number) {
     return suma;
 }
 
-export async function getUltimoTicket() {
-    const database = (await conexion).db('tocgame');
-    const parametros = database.collection('parametros');
-    const resultado: number = (await parametros.findOne({_id: "PARAMETROS"})).ultimoTicket;
+// export async function getUltimoTicket() {
+//     const database = (await conexion).db('tocgame');
+//     const parametros = database.collection('parametros');
+//     const resultado: number = (await parametros.findOne({_id: "PARAMETROS"})).ultimoTicket;
     
-    return resultado;
+//     return resultado;
+// }
+
+export async function getUltimoTicket(): Promise<number> {
+    const database = (await conexion).db('tocgame');
+    const tickets = database.collection('tickets');
+    const resultado = await (await tickets.find({}).sort({_id: -1}).limit(1)).toArray();
+    if (resultado.length > 0) {
+        if (resultado[0]._id != undefined) {
+            return resultado[0]._id; // Último ID ticket
+        } else {
+            return null;
+        }
+    }
+    return null;
 }
 
 export async function nuevoTicket(ticket: any) {
