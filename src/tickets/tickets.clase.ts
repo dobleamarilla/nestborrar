@@ -127,7 +127,8 @@ export class TicketsClase {
         if (await this.insertarTicket(objTicket)) {
             if (await cestas.borrarCesta(idCesta)) {
                 if (await parametrosInstance.setUltimoTicket(objTicket._id)) {
-                    // return await movimientosInstance.nuevaSalida();
+                    movimientosInstance.nuevaSalida(objTicket.total, 'Targeta 3G', 'TARJETA', false, objTicket._id);
+                    return true;
                 } else {
                     console.log("Error no se ha podido cambiar el último id ticket");
                 }
