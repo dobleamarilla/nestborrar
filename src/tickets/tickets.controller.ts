@@ -43,10 +43,12 @@ export class TicketsController {
     crearTicketDatafono3G(@Body() params) {
         return ticketsInstance.crearTicketDatafono3G(params.total, params.idCesta).then((res) => {
             if (res) {
+                console.log('ENTRO EN ERROR = false');
                 return {
                     error: false
                 }
             } else {
+                console.log('ENTRO EN ERROR = true');
                 return {
                     error: true
                 }
