@@ -27,6 +27,7 @@ export class TrabajadoresController {
 
     @Post('setActivo')
     setTrabajadorActivo(@Body() params) {
+        console.log('viene: ', params);
         return trabajadoresInstance.setCurrentTrabajadorPorNombre(params.nombre).then((res) => {
             if (res) {
                 return {
@@ -62,5 +63,33 @@ export class TrabajadoresController {
     buscar(@Body() params) {
         console.log("JA: ", params.busqueda)
         return trabajadoresInstance.buscar(params.busqueda);
+    }
+
+    @Post('fichar')
+    fichar(@Body() params) {
+        return trabajadoresInstance.ficharTrabajador(params.idTrabajador).then((res) => {
+            if (res) {
+                return { error: false };
+            } else {
+                return { error: true, mensaje: 'Error en ficharTrabajador()' };
+            }
+        }).catch((err) => {
+            console.log(err);
+            return { error: true, mensaje: 'Error, mirar consola nest' };
+        });
+    }
+
+    @Post('desfichar')
+    desfichar(@Body() params) {
+        return trabajadoresInstance.desficharTrabajador(params.idTrabajador).then((res) => {
+            if (res) {
+                return { error: false };
+            } else {
+                return { error: true, mensaje: 'Error en desficharTrabajador()' };
+            }
+        }).catch((err) => {
+            console.log(err);
+            return { error: true, mensaje: 'Error, mirar consola nest' };
+        });
     }
 }

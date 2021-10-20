@@ -54,14 +54,15 @@ export async function getTrabajadoresFichados() {
 export async function ficharTrabajador(idTrabajador: number) {
     const database = (await conexion).db('tocgame');
     const trabajadores = database.collection('trabajadores');
-    const resultado = trabajadores.updateOne({_id: idTrabajador}, {fichado: true});
+    console.log("ID TRABAJADOR A FICHAR: ", idTrabajador);
+    const resultado = trabajadores.updateOne({_id: idTrabajador}, {$set: { "fichado": true} });
     
     return resultado;
 }
 export async function desficharTrabajador(idTrabajador: number) {
     const database = (await conexion).db('tocgame');
     const trabajadores = database.collection('trabajadores');
-    const resultado = trabajadores.updateOne({_id: idTrabajador}, {fichado: false});
+    const resultado = trabajadores.updateOne({_id: idTrabajador}, {$set: {"fichado": false}});
     
     return resultado;
 }

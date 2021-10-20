@@ -75,6 +75,7 @@ export class TrabajadoresClase {
                         parametrosInstance.actualizarParametros();
                         return true;
                     } else {
+                        console.log(123);
                         return false;
                     };
                 }).catch((err) => {
@@ -82,9 +83,11 @@ export class TrabajadoresClase {
                     return false;
                 });
             } else {
+                console.log(321);
                 return false;
             }
         }).catch((err) => {
+            console.log(987);
             return false;
         });
 
@@ -129,6 +132,7 @@ export class TrabajadoresClase {
                     if (res2.acknowledged) {
                         return true;
                     } else {
+                        console.log(123);
                         return false;
                     }
                 }).catch((err) => {
@@ -136,6 +140,7 @@ export class TrabajadoresClase {
                     return false;
                 });
             } else {
+                console.log(432);
                 return false;
             }
         }).catch((err) => {
