@@ -34,4 +34,18 @@ export class CajaController {
             return { error: true };
         });
     }
+
+    @Post('estadoCaja')
+    estadoCaja() { // No probado! Se le pasa solo el array de monedas
+        return cajaInstance.cajaAbierta().then((res) => {
+            if (res) {
+                return { abierta: true, error: false };
+            } else {
+                return { abierta: false, error: false };
+            }
+        }).catch((err) => {
+            console.log(err);
+            return { error: true };
+        });
+    }
 }
